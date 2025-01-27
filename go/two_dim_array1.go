@@ -1,4 +1,4 @@
-package two_dim_array
+package main
 
 import "fmt"
 
@@ -6,14 +6,14 @@ func maxNumber(arr [][]float64) {
 	maxNum := arr[0][0]
 
 	for i := 0; i < len(arr); i++ {
-		for j := 0; j < len(arr); j++ {
+		for j := 0; j < len(arr[i]); j++ {
 
 			if arr[i][j] > maxNum {
 				maxNum = arr[i][j]
 			}
 		}
 	}
-	fmt.Println(maxNum)
+	fmt.Println("The maximum number from array is: ", maxNum)
 }
 
 func main() {
