@@ -16,13 +16,13 @@ func maxNumber(arr [][]float64) {
 	fmt.Println("The maximum number from array is: ", maxNum)
 }
 
-func main() {
-	// Example 2D array
-	testArr := [][]float64{
-		{1.1, 2.2},
-		{7.7, 9.9},
-	}
+// func main() {
+// 	// Example 2D array
+// 	testArr := [][]float64{
+// 		{1.1, 2.2},
+// 		{7.7, 9.9},
+// 	}
 
-	maxNumber(testArr)
+// 	maxNumber(testArr)
 
-}
+// }
