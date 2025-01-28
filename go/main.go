@@ -11,6 +11,10 @@ func main() {
 		fmt.Fprint(w, "Web services are easy with Go!")
 	})
 
+	http.HandleFunc("/home", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "./home.html")
+	})
+
 	// Print a message indicating the server is starting
 	fmt.Println("Starting web server on port 9090...")
 
@@ -19,4 +23,5 @@ func main() {
 	if err != nil {
 		fmt.Println("Error starting the web server: ", err)
 	}
+
 }
