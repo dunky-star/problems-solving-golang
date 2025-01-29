@@ -1,0 +1,8 @@
+2023 00:00:00 INFO This is an informational message
+2023 00:00:00 EMERGENCY Failed to connect to database
+2023 00:00:00 DEBUG This is an debug message
+2023 00:00:00 CRITICAL gRPC client failed to connect to server
+2023 00:00:00 CRITICAL Failed to find user with ID '42'
+2023 00:00:00 INFO This is an informational message
+2023 00:00:00 INFO This is an informational message
+2023 00:00:00 INFO This is an informational message
