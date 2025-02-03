@@ -7,3 +7,16 @@ echo "export GOROOT=/usr/local/go" >> ~/.bashrc
 echo "export GOPATH=\$HOME/go" >> ~/.bashrc
 echo "export PATH=\$GOPATH/bin:\$GOROOT/bin:\$PATH" >> ~/.bashrc
 source ~/.bashrc
+
+
+Go: Install/Update Tools --> To install/update tooling on VSCode.
+
+go mod init [package-name]
+
+SIMPLE DATA TYPES IN GO: 
+************************
+Simple Data Type mean it contains one and only one value (single value) .
+1. Strings
+2. Numbers
+3. Booleans
+4. Errors
