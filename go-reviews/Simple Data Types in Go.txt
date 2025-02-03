@@ -1,4 +1,5 @@
 pkg.go.dev/builtin@go1.23.5
+go.dev/ref/spec -> Go language specification
 
 DATA TYPES:
 ===========
