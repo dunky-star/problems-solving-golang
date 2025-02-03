@@ -1,0 +1,47 @@
+pkg.go.dev/builtin@go1.23.5
+
+DATA TYPES:
+===========
+
+Strings:
+********
+
+"this is a string" -> Interpreted string
+`this is also a string` -> raw string
+"this is an escape character: \n it creates a newlin"
+
+Numbers:
+********
+int -> Integers
+uint -> Unsigned integers
+float32/float64 -> Floating point numbers
+complex64/complex128 - > Complex numbers 
+
+Booleans:
+*********
+true/false 
+
+Error type:
+***********
+The error built-in interface type is the conventional interface for representing an error condition,
+with the nil value representing no error.
+
+type Error interface {
+	Error() string
+}
+
+VARIABLES:
+=========
+
+var myName string // declare variable
+var myName string = "Duncan" // Declare and intialize
+
+var myName = "Duncan" // Initialize with inferred type
+myName := "Mike" // Short declaration syntax
+
+TYPE CONVERSION:
+================
+var i int = 32
+var f float32
+f = i // Error! - Go doesn' support implicit conversions.
+f = float32(i) // type conversions allow explicit conversion.
