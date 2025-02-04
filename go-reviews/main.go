@@ -11,16 +11,16 @@ import (
 
 func main() {
 
-	http.HandleFunc("/", Handle)
-	fmt.Println("Starting web server on port 9090...")
-	err := http.ListenAndServe(":9090", nil)
+	http.HandleFunc("/", Handler)
+	fmt.Println("Starting web server on port 3000...")
+	err := http.ListenAndServe(":3000", nil)
 	if err != nil {
 		fmt.Println("Error srating web server: ", err)
 	}
 }
 
 // Web services
-func Handle(w http.ResponseWriter, r *http.Request) {
+func Handler(w http.ResponseWriter, r *http.Request) {
 	f, _ := os.Open("menu.txt")
 	io.Copy(w, f)
 }
