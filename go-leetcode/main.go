@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func main() {
+func mainBkup() {
 	// Handle the root route
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, "Web services are easy with Go!")
