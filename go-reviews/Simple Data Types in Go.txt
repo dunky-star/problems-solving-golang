@@ -1,4 +1,5 @@
 pkg.go.dev/builtin@go1.23.5
+pkg.go.dev/bufio
 go.dev/ref/spec -> Go language specification
 
 DATA TYPES:
@@ -46,3 +47,7 @@ var i int = 32
 var f float32
 f = i // Error! - Go doesn' support implicit conversions.
 f = float32(i) // type conversions allow explicit conversion.
+
+POINTERS:
+=========
+Pointers are primarily used to share memory. Use copies whenever possible.

@@ -1,8 +1,43 @@
 package main
 
-import "fmt"
+import (
+	"bufio"
+	"fmt"
+	"io"
+	"net/http"
+	"os"
+	"strings"
+)
 
 func main() {
+
+	http.HandleFunc("/", Handle)
+	fmt.Println("Starting web server on port 9090...")
+	err := http.ListenAndServe(":9090", nil)
+	if err != nil {
+		fmt.Println("Error srating web server: ", err)
+	}
+}
+
+// Web services
+func Handle(w http.ResponseWriter, r *http.Request) {
+	f, _ := os.Open("menu.txt")
+	io.Copy(w, f)
+}
+
+// Command Line application
+func mainPlay1() {
+	fmt.Println("What would you like me to scream")
+	in := bufio.NewReader(os.Stdin) // NewReader decorator
+	s, _ := in.ReadString('\n')
+	s = strings.TrimSpace(s)
+	s = strings.ToUpper(s)
+	fmt.Println(s + "!")
+
+}
+
+// Go concepts
+func mainPlay2() {
 	// Constant
 	const (
 		const1      = 20
@@ -33,8 +68,10 @@ func main() {
 
 	// Pointers
 	a := 100
-	b := &a //(b points to a)
-	c := *b // Derefence to get value stored
+	b := &a       //(b points to a)
+	c := *b       // Derefence to get value stored
+	d := new(int) // Pointer to Anonymous memory
+	fmt.Println("Anonymous memory of d: ", d)
 	fmt.Println("[b] points to [a]", b)
 	fmt.Println("Dereferencing to extract value from b: ", c)
 }
