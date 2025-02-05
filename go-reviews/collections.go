@@ -42,15 +42,18 @@ func main() {
 	// NB: Maps are not comparable - will raise compile time error (m == map1)
 
 	//Structs
-	var s struct { // Declare an anonymous struct
+	type myStruct struct { // Declare an anonymous struct
 		name   string
 		salary float64
 		id     int
 	}
 
-	s.name = "Geoffrey"
-	s.id = 001
-	s.salary = 120000
+	s := myStruct{
+		id:     001,
+		name:   "Geoffrey",
+		salary: 120000,
+	}
+
 	fmt.Printf("Id: %d, Name: %s, Salary: %.0f\n", s.id, s.name, s.salary)
 
 }
