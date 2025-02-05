@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func main() {
+func mainBkup() {
 
 	http.HandleFunc("/", Handler)
 	fmt.Println("Starting web server on port 3000...")
