@@ -38,7 +38,7 @@ func main() {
 	}
 	map2["other"] = []string{"Hot Chocolate"}
 	fmt.Println(map2)
-	fmt.Println(map2["coffee "])
+	fmt.Println(map2["coffee"])
 	// NB: Maps are not comparable - will raise compile time error (m == map1)
 
 	//Structs
