@@ -5,7 +5,7 @@ import (
 	"slices"
 )
 
-func main() {
+func mainColl() {
 	// Array
 	var arr [3]int
 	fmt.Println("Array: ", arr)
@@ -41,7 +41,8 @@ func main() {
 	fmt.Println(map2["coffee"])
 	// NB: Maps are not comparable - will raise compile time error (m == map1)
 
-	//Structs
+	//Structs - structs are copied by value - so we don't have data sharing involved.
+	// Structs are comparable
 	type myStruct struct { // Declare an anonymous struct
 		name   string
 		salary float64
