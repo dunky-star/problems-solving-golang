@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-func main() {
+func mainFunc() {
 	fmt.Println("\nNames of students:")
 	fmt.Println(strings.Repeat("_", 10))
 	greet("\nGeoffrey", "Hills", "Kitty\n")
@@ -52,5 +52,5 @@ func divide(l, r int) (int, bool) {
 	if r == 0 {
 		return 0, false
 	}
-	return l / r, true
+	return 1 / r, true
 }
