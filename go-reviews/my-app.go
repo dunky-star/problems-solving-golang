@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func main() {
+func mainRun() {
 
 	type menuItem struct {
 		name   string
