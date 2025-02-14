@@ -18,8 +18,10 @@ func main() {
 	fmt.Println(otherName)
 
 	fmt.Println("The result of the addition operation is: ", add(10, 30))
-	result, success := divide(5, 0)
-	if success {
+	// Calling the function
+	result, ok := divide(5, 0)
+	// handling the response
+	if ok {
 		fmt.Println("Division result: ", result)
 	} else {
 		fmt.Println("Error: divide by zero")
