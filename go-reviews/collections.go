@@ -9,7 +9,7 @@ func mainColl() {
 	// Array
 	var arr [3]int
 	fmt.Println("Array: ", arr)
-	// SLices - is what we called Refenrence data tyoe.
+	// Slices - is what we called Reference data tyoe.
 	var x = []int{1, 2, 3}
 	x = append(x, 5, 10, 15)   // Add elements to the slice
 	x = slices.Delete(x, 0, 1) // Remove element at index 0 from the slice
