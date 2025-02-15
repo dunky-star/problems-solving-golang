@@ -10,7 +10,7 @@ import (
 
 var in = bufio.NewReader(os.Stdin)
 
-func main() {
+func mainAgain() {
 
 loop1: // Label for breaking the loop in a switch statment
 	for {
@@ -24,7 +24,7 @@ loop1: // Label for breaking the loop in a switch statment
 		case "1":
 			menu.Print()
 		case "2":
-			menu.AddItem()
+			menu.Add()
 
 		case "q":
 			break loop1
