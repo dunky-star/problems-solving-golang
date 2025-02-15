@@ -49,6 +49,21 @@ func main() {
 
 	fmt.Println(p.Print())
 
+	u, ok := p.(user) // Type assertion
+	fmt.Println(u, ok)
+	mi, ok := p.(menuItem)
+	fmt.Println(mi, ok)
+
+	switch v := p.(type) { // Type switch
+	case user:
+		fmt.Println("Found a user!", v)
+	case menuItem:
+		fmt.Println("Found a menuItem!", v)
+	default:
+		fmt.Println("I'm no sure what this is...")
+
+	}
+
 }
 
 // Type
