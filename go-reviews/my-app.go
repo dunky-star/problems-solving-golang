@@ -4,18 +4,9 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"reviews/menu"
 	"strings"
 )
-
-type menuItem struct {
-	name   string
-	prices map[string]float64
-}
-
-var menu = []menuItem{
-	{name: "Coffee", prices: map[string]float64{"small": 1.65, "medium": 1.80, "large": 1.95}},
-	{name: "Espresso", prices: map[string]float64{"single": 1.90, "double": 2.25, "triple": 2.55}},
-}
 
 var in = bufio.NewReader(os.Stdin)
 
@@ -31,9 +22,9 @@ loop1: // Label for breaking the loop in a switch statment
 
 		switch strings.TrimSpace(choice) {
 		case "1":
-			printMenu()
+			menu.Print()
 		case "2":
-			addItem()
+			menu.AddItem()
 
 		case "q":
 			break loop1
@@ -42,20 +33,4 @@ loop1: // Label for breaking the loop in a switch statment
 		}
 	}
 
-}
-
-func addItem() {
-	fmt.Println("Please enter the name of the new item")
-	name, _ := in.ReadString('\n')
-	menu = append(menu, menuItem{name: name, prices: make(map[string]float64)})
-}
-
-func printMenu() {
-	for _, item := range menu {
-		fmt.Println(item.name)
-		fmt.Println(strings.Repeat("-", 10))
-		for size, price := range item.prices {
-			fmt.Printf("\t%10s%10.2f\n", size, price)
-		}
-	}
 }

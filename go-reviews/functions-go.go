@@ -52,5 +52,5 @@ func divide(l, r int) (int, bool) {
 	if r == 0 {
 		return 0, false
 	}
-	return 1 / r, true
+	return l / r, true
 }
