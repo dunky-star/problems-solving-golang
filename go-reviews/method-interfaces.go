@@ -35,7 +35,7 @@ func (mi menuItem) Print() string {
 	return b.String()
 }
 
-func main() {
+func mainMany() {
 	var p printer
 	p = user{username: "Geoffrey", id: 01}
 	fmt.Println(p.Print())
