@@ -46,4 +46,18 @@ func main() {
 	default:
 		fmt.Println("no messages available")
 	}
+
+	// Looping through channels
+	ch3 := make(chan int)
+
+	go func() {
+		for i := 0; i <= 1000; i = i + 100 {
+			ch3 <- i
+		}
+		close(ch3)
+	}()
+
+	for msg := range ch3 {
+		fmt.Println(msg)
+	}
 }
