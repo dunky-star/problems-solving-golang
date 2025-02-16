@@ -10,7 +10,7 @@ import (
 
 var in = bufio.NewReader(os.Stdin)
 
-func mainAgain() {
+func mainApp() {
 
 loop1: // Label for breaking the loop in a switch statment
 	for {
@@ -24,7 +24,10 @@ loop1: // Label for breaking the loop in a switch statment
 		case "1":
 			menu.Print()
 		case "2":
-			menu.Add()
+			err := menu.Add()
+			if err != nil {
+				fmt.Println(fmt.Errorf("invalid input: %w", err))
+			}
 
 		case "q":
 			break loop1

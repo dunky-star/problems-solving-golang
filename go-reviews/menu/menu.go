@@ -2,6 +2,7 @@ package menu
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -16,10 +17,20 @@ type menu []menuItem
 
 var in = bufio.NewReader(os.Stdin)
 
-func (m *menu) add() {
+func (m *menu) add() error {
 	fmt.Println("Please enter the name of the new item")
 	name, _ := in.ReadString('\n')
+	name = strings.TrimSpace(name)
+
+	for _, item := range data {
+		if item.name == name {
+			return errors.New("menu item already exists")
+		}
+	}
+
 	*m = append(*m, menuItem{name: name, prices: make(map[string]float64)})
+
+	return nil
 }
 
 func (m menu) print() {
@@ -32,8 +43,8 @@ func (m menu) print() {
 	}
 }
 
-func Add() {
-	data.add()
+func Add() error {
+	return data.add()
 }
 
 func Print() {

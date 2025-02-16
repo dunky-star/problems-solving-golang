@@ -2,7 +2,7 @@ package main
 
 import "fmt"
 
-func main() {
+func mainGen() {
 	a1 := []int{10, 20, 30}
 	a2 := []float64{3.14, 11.7, 4.4}
 	a3 := []string{"Geo", "Dun", "Karl"}
