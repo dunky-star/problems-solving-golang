@@ -18,7 +18,7 @@ func blueAndRed(arr []string) int {
 	return count
 }
 
-func main() {
+func mainRedBlue() {
 	arr := []string{"CAT", "blue", "blue", "CAT", "another", "Red", "bird"}
 	fmt.Println("The number of red and blue strings are: ", blueAndRed(arr))
 }
