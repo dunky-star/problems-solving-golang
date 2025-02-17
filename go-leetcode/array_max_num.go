@@ -14,6 +14,9 @@ func maxNum(nums []int) (int, error) {
 	}
 	maxNum := nums[0] // Initialize with first value
 	for _, num := range nums {
+		if num <= 0 { // Validate input while iterating
+			return 0, errors.New("invalid-input: array contains non-positive integers")
+		}
 		if num > maxNum {
 			maxNum = num
 		}
