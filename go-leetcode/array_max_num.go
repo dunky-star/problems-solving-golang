@@ -24,7 +24,7 @@ func maxNum(nums []int) (int, error) {
 	return maxNum, nil
 }
 
-func main() {
+func mainMaxNum() {
 	// Test cases
 	testCases := [][]int{
 		{10, 2, 3, 100, 500, 4}, // Normal case
