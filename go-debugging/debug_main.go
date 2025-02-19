@@ -2,7 +2,7 @@ package main
 
 import "fmt"
 
-func main() {
+func mainDebug() {
 	itemOpeniongStock := 500
 	itemSold := 100
 	itemReturned := 50
