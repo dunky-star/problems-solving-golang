@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func main() {
+func mainWeb() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		message := "Hello, Geoffrey!"
 		w.Write([]byte(message))

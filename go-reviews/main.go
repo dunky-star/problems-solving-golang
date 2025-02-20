@@ -9,7 +9,18 @@ import (
 	"strings"
 )
 
-func mainBkup() {
+func main() {
+	itemPrice := 50
+	itemDiscunt := 10
+
+	totalDiscount := Discount(itemPrice, itemDiscunt)
+	fmt.Println("Item price: ", itemPrice)
+	fmt.Println("Item Discount %:", itemDiscunt)
+	fmt.Println("Total Discount: ", totalDiscount)
+
+}
+
+func mainNet() {
 
 	http.HandleFunc("/", Handler)
 	fmt.Println("Starting web server on port 3000...")
@@ -37,7 +48,7 @@ func mainPlay1() {
 }
 
 // Go concepts
-func mainPlay2() {
+func mainConcept() {
 	// Constant
 	const (
 		const1      = 20
