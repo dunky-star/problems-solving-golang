@@ -17,6 +17,7 @@ func main() {
 	fmt.Println("Item price: ", itemPrice)
 	fmt.Println("Item Discount %:", itemDiscunt)
 	fmt.Println("Total Discount: ", totalDiscount)
+	fmt.Println("Random number: ", RandomNumber())
 
 }
 
