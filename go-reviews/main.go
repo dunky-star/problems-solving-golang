@@ -9,6 +9,13 @@ import (
 	"strings"
 )
 
+func init() { // Takes no argument and returns no value. Used for initialization before the main program runs.
+	fmt.Println("")
+	fmt.Println(">> Hello from main.go init() <<")
+	fmt.Println("Random number: ", RandomNumber())
+	fmt.Println("")
+}
+
 func main() {
 	itemPrice := 50
 	itemDiscunt := 10
@@ -17,7 +24,6 @@ func main() {
 	fmt.Println("Item price: ", itemPrice)
 	fmt.Println("Item Discount %:", itemDiscunt)
 	fmt.Println("Total Discount: ", totalDiscount)
-	fmt.Println("Random number: ", RandomNumber())
 
 }
 
