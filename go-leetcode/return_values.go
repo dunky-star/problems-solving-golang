@@ -13,7 +13,21 @@ func divide(l, r int) (int, bool) {
 type myInt int
 
 func (i myInt) isEven() bool { // Method with receiver of type myInt
-	return i%2 == 0
+	return (i)%2 == 0
+}
+
+type user struct {
+	id       int
+	username string
+	email    string
+}
+
+func (u user) String() string { // Method receiver of type user
+	return fmt.Sprintf("%v (%v) (%v)\n", u.id, u.username, u.email)
+}
+
+func (u *user) changeEmail(newEmail string) { // Pointer receiver to modify the original struct
+	u.email = newEmail
 }
 
 func main() {
@@ -23,4 +37,11 @@ func main() {
 	}
 	num := myInt(4)
 	fmt.Println("Is even:", num.isEven())
+
+	// Using methods on struct
+	u := user{id: 1, username: "dunky", email: "dunky@example.com"}
+	fmt.Print(u.String())
+	u.changeEmail("dunky@newdomain.com")
+	fmt.Print(u.String())
+
 }
