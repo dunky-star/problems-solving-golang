@@ -16,13 +16,18 @@ func (i myInt) isEven() bool { // Method with receiver of type myInt
 	return (i)%2 == 0
 }
 
+// Interface
+type printer interface {
+	Print() string
+}
+
 type user struct {
 	id       int
 	username string
 	email    string
 }
 
-func (u user) String() string { // Method receiver of type user
+func (u user) Print() string { // Method receiver of type user
 	return fmt.Sprintf("%v (%v) (%v)\n", u.id, u.username, u.email)
 }
 
@@ -40,8 +45,8 @@ func main() {
 
 	// Using methods on struct
 	u := user{id: 1, username: "dunky", email: "dunky@example.com"}
-	fmt.Print(u.String())
+	fmt.Print(u.Print())
 	u.changeEmail("dunky@newdomain.com")
-	fmt.Print(u.String())
+	fmt.Print(u.Print())
 
 }
