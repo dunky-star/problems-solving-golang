@@ -10,6 +10,17 @@ func divide(l, r int) (int, bool) {
 }
 
 // Generics
+type addable interface {
+	int | float64 | string
+}
+
+func add[V addable](s []V) V {
+	var result V
+	for _, v := range s {
+		result += v
+	}
+	return result
+}
 
 func cloneSlice[V any](s []V) []V {
 	result := make([]V, len(s))
@@ -113,6 +124,17 @@ func main() {
 	}
 	c2 := cloneMap(testScoresMap)
 	fmt.Printf("\nCloned map: %#v\n", c2)
+
+	a1 := []int{1, 2, 3, 4}
+	a2 := []float64{1.1, 2.2, 3.3, 4.4}
+	a3 := []string{"one", "two", "three", "four"}
+
+	s1 := add(a1)
+	s2 := add(a2)
+	s3 := add(a3)
+	fmt.Printf("\nThe Sum of %v : %v\n", a1, s1)
+	fmt.Printf("\nThe Sum of %v : %v\n", a2, s2)
+	fmt.Printf("\nThe Sum of %v : %v\n", a3, s3)
 
 	// Transient Polymorphism with Generics
 	// r = f
