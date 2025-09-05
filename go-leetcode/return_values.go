@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"os"
+)
 
 func divide(l, r int) (int, bool) {
 	if r == 0 {
@@ -125,6 +128,7 @@ func main() {
 	c2 := cloneMap(testScoresMap)
 	fmt.Printf("\nCloned map: %#v\n", c2)
 
+	// Transient Polymorphism with Generics
 	a1 := []int{1, 2, 3, 4}
 	a2 := []float64{1.1, 2.2, 3.3, 4.4}
 	a3 := []string{"one", "two", "three", "four"}
@@ -136,8 +140,15 @@ func main() {
 	fmt.Printf("\nThe Sum of %v : %v\n", a2, s2)
 	fmt.Printf("\nThe Sum of %v : %v\n", a3, s3)
 
-	// Transient Polymorphism with Generics
 	// r = f
 	// r = t
+	// Errors in Go - In Go, errors are treated as values, not exceptions
+	f, err := os.Open("non_existent_file.txt")
+	if err != nil {
+		fmt.Println("Error opening file:", err)
+	} else {
+		defer f.Close()
+		// Use the file
+	}
 
 }
