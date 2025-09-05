@@ -9,6 +9,24 @@ func divide(l, r int) (int, bool) {
 	return l / r, true
 }
 
+// Generics
+
+func cloneSlice(s []float64) []float64 {
+	result := make([]float64, len(s))
+	for i, v := range s {
+		result[i] = v
+	}
+	return result
+}
+
+func cloneMap(m map[string]float64) map[string]float64 {
+	result := make(map[string]float64, len(m))
+	for k, v := range m {
+		result[k] = v
+	}
+	return result
+}
+
 // Method on custom type
 type myInt int
 
@@ -35,7 +53,34 @@ func (u *user) changeEmail(newEmail string) { // Pointer receiver to modify the 
 	u.email = newEmail
 }
 
+type Reader interface {
+	Read([]byte) (int, error)
+}
+
+type File struct {
+	name string
+	size int64
+}
+
+func (f File) Read(b []byte) (int, error) {
+	// Dummy implementation
+	return 0, nil
+}
+
+type TCPConn struct {
+	address string
+	port    int
+}
+
+func (t TCPConn) Read(b []byte) (int, error) {
+	// Dummy implementation
+	return 0, nil
+}
+
 func main() {
+	// var f File
+	// var t TCPConn
+	// var r Reader
 	result, ok := divide(10, 2)
 	if ok {
 		fmt.Println("Result:", result)
@@ -48,5 +93,29 @@ func main() {
 	fmt.Print(u.Print())
 	u.changeEmail("dunky@newdomain.com")
 	fmt.Print(u.Print())
+
+	testScoresSlice := []float64{
+		98.5,
+		87.3,
+		76.3,
+		89.0,
+		27,
+	}
+
+	c1 := cloneSlice(testScoresSlice)
+	fmt.Printf("Original slice address: %p, Cloned slice address: %p, Cloned slice: %v\n",
+		&testScoresSlice[0], &c1[0], c1)
+
+	testScoresMap := map[string]float64{
+		"Math":    98.5,
+		"Science": 76.3,
+		"English": 89.0,
+	}
+	c2 := cloneMap(testScoresMap)
+	fmt.Printf("\nCloned map: %#v\n", c2)
+
+	// Transient Polymorphism with Generics
+	// r = f
+	// r = t
 
 }
