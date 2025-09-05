@@ -11,16 +11,16 @@ func divide(l, r int) (int, bool) {
 
 // Generics
 
-func cloneSlice(s []float64) []float64 {
-	result := make([]float64, len(s))
+func cloneSlice[V any](s []V) []V {
+	result := make([]V, len(s))
 	for i, v := range s {
 		result[i] = v
 	}
 	return result
 }
 
-func cloneMap(m map[string]float64) map[string]float64 {
-	result := make(map[string]float64, len(m))
+func cloneMap[K comparable, V any](m map[K]V) map[K]V {
+	result := make(map[K]V, len(m))
 	for k, v := range m {
 		result[k] = v
 	}
