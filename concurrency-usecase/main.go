@@ -22,6 +22,12 @@ func main() {
 	go func() {
 		order := <-validOrderCh
 		fmt.Printf("Valid order received: %s", order)
+		wg.Done()
+	}()
+	go func() {
+		invalidOrder := <-invalidOrderCh
+		fmt.Printf("Invalid order received: %s, error: %s", invalidOrder.order, invalidOrder.err)
+		wg.Done()
 	}()
 	wg.Wait()
 
