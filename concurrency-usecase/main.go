@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"sync"
@@ -25,27 +26,25 @@ func main() {
 		wg.Done()
 	}()
 	go func() {
-		invalidOrder := <-invalidOrderCh
-		fmt.Printf("Invalid order received: %s, error: %s", invalidOrder.order, invalidOrder.err)
+		order := <-invalidOrderCh
+		fmt.Printf("Invalid order received: %s. Issue: %s", order.order, order.err)
 		wg.Done()
 	}()
 	wg.Wait()
 
 }
 
-func validateOrders(in, out chan order, errChan chan invalidOrder) {
-	order := <-in
-	if order.Quantity <= 0 {
-		// Error condition
-		errChan <- invalidOrder{order: order, err: fmt.Errorf("Quantity %.2f must be grater that zero for product %s",
-			order.Quantity, order.ProductCode)}
-	} else {
-		// Success handling
-		out <- order
+func validateOrders(in <-chan order, out chan<- order, errChan chan<- invalidOrder) {
+	for order := range in {
+		if order.Quantity <= 0 {
+			// Error condition
+			errChan <- invalidOrder{order: order, err: errors.New("Quantity must be grater that zero for product")}
+		} else {
+			// Success handling
+			out <- order
+		}
 	}
-
 }
-
 func receivedOrders(out chan order, wg *sync.WaitGroup) {
 	for _, rawOrder := range rawOrders {
 		var newOrder order
