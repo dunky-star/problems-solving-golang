@@ -5,13 +5,14 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"sync"
 )
 
 var (
-	// go:embed numbers.txt
+	//go:embed numbers.txt
 	data []byte
 )
 
@@ -102,6 +103,20 @@ func (t TCPConn) Read(b []byte) (int, error) {
 	return 0, nil
 }
 
+func parseNumbers(data []byte) {
+	lines := strings.Split(string(data), "\n")
+	fmt.Println("-----------------")
+	fmt.Println(string(data))
+	var sum int
+	for _, line := range lines {
+		if line != "" {
+			val, _ := strconv.Atoi(line)
+			sum += val
+		}
+	}
+	fmt.Println("Sum:", sum)
+}
+
 func main() {
 	// var f File
 	// var t TCPConn
@@ -158,29 +173,20 @@ func main() {
 	// r = f
 	// r = t
 
-	fmt.Println(string(data))
-	fmt.Println("-----------------")
-	lines := strings.Split(string(data), "\r\n")
-	var sum int
-	for _, line := range lines {
-		if line != "" {
-			val, _ := strconv.Atoi(line)
-			sum += val
-		}
-	}
-	fmt.Println("Sum:", sum)
-
 	var wg sync.WaitGroup
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		f, err := os.Open("non_existance_file.txt")
+		dir, _ := os.Getwd()
+		fmt.Println("Current working dir:", dir)
+		path := filepath.Join("go-leetcode", "numbers.txt")
+		f, err := os.Open(path)
 		if err != nil {
 			fmt.Println("Error opening file in goroutine:", err)
 			return
 		}
 		defer f.Close()
-		// Use the file
+		parseNumbers(data)
 	}()
 	wg.Wait()
 }
