@@ -1,15 +1,26 @@
 package main
 
 import (
+	_ "embed"
+	"errors"
 	"fmt"
 	"os"
+	"strconv"
+	"strings"
+	"sync"
 )
 
-func divide(l, r int) (int, bool) {
+var (
+	// go:embed numbers.txt
+	data []byte
+)
+
+// Error handling with multiple return values
+func divide(l, r int) (int, error) {
 	if r == 0 {
-		return 0, false
+		return 0, errors.New("Invalid divisor: must not be zero")
 	}
-	return l / r, true
+	return l / r, nil
 }
 
 // Generics
@@ -95,10 +106,14 @@ func main() {
 	// var f File
 	// var t TCPConn
 	// var r Reader
-	result, ok := divide(10, 2)
-	if ok {
-		fmt.Println("Result:", result)
+	result, err := divide(10, 0)
+	if err != nil {
+		fmt.Println("Divison error: ", err)
+	} else {
+		fmt.Println("Result of division:", result)
 	}
+
+	// Using method on custom type
 	num := myInt(4)
 	fmt.Println("Is even:", num.isEven())
 
@@ -142,13 +157,30 @@ func main() {
 
 	// r = f
 	// r = t
-	// Errors in Go - In Go, errors are treated as values, not exceptions
-	f, err := os.Open("non_existent_file.txt")
-	if err != nil {
-		fmt.Println("Error opening file:", err)
-	} else {
+
+	fmt.Println(string(data))
+	fmt.Println("-----------------")
+	lines := strings.Split(string(data), "\r\n")
+	var sum int
+	for _, line := range lines {
+		if line != "" {
+			val, _ := strconv.Atoi(line)
+			sum += val
+		}
+	}
+	fmt.Println("Sum:", sum)
+
+	var wg sync.WaitGroup
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		f, err := os.Open("non_existance_file.txt")
+		if err != nil {
+			fmt.Println("Error opening file in goroutine:", err)
+			return
+		}
 		defer f.Close()
 		// Use the file
-	}
-
+	}()
+	wg.Wait()
 }
