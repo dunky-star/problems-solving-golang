@@ -5,8 +5,8 @@ import "fmt"
 func maxNumber(arr [][]float64) {
 	maxNum := arr[0][0]
 
-	for i := 0; i < len(arr); i++ {
-		for j := 0; j < len(arr[i]); j++ {
+	for i := range arr {
+		for j := range arr[i] {
 
 			if arr[i][j] > maxNum {
 				maxNum = arr[i][j]

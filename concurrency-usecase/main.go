@@ -16,22 +16,33 @@ func main() {
 	var invalidOrderCh = make(chan invalidOrder)
 	var wg sync.WaitGroup
 
-	go receivedOrders(receivedOrderCh, &wg)
+	go receivedOrders(receivedOrderCh)
 	go validateOrders(receivedOrderCh, validOrderCh, invalidOrderCh)
 
 	wg.Add(1)
-	go func() {
-		order := <-validOrderCh
-		fmt.Printf("Valid order received: %s", order)
-		wg.Done()
-	}()
-	go func() {
-		order := <-invalidOrderCh
-		fmt.Printf("Invalid order received: %s. Issue: %s", order.order, order.err)
-		wg.Done()
-	}()
-	wg.Wait()
+	go func(validOrderCh <-chan order, invalidOrderCh <-chan invalidOrder) {
+	loop:
+		for {
+			select {
+			case order, ok := <-validOrderCh:
+				if ok {
+					fmt.Printf("Valid order received: %s", order)
+				} else {
+					break loop
+				}
 
+			case order, ok := <-invalidOrderCh:
+				if ok {
+					fmt.Printf("Invalid order received: %s. Issue: %s", order.order, order.err)
+				} else {
+					break loop
+				}
+
+			}
+		}
+		wg.Done()
+	}(validOrderCh, invalidOrderCh)
+	wg.Wait()
 }
 
 func validateOrders(in <-chan order, out chan<- order, errChan chan<- invalidOrder) {
@@ -44,8 +55,10 @@ func validateOrders(in <-chan order, out chan<- order, errChan chan<- invalidOrd
 			out <- order
 		}
 	}
+	close(out)
+	close(errChan)
 }
-func receivedOrders(out chan order, wg *sync.WaitGroup) {
+func receivedOrders(out chan<- order) {
 	for _, rawOrder := range rawOrders {
 		var newOrder order
 		err := json.Unmarshal([]byte(rawOrder), &newOrder)
@@ -55,7 +68,8 @@ func receivedOrders(out chan order, wg *sync.WaitGroup) {
 		}
 		out <- newOrder
 	}
-	wg.Done()
+	close(out)
+
 }
 
 var rawOrders = []string{
