@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"strconv"
 	"sync"
 
 	"github.com/google/uuid"
@@ -77,4 +78,25 @@ var rawOrders = []string{
 	fmt.Sprintf(`{"productCode": "%s", "quantity": 42.3, "status": 1}`, uuid.NewString()),
 	fmt.Sprintf(`{"productCode": "%s", "quantity": 19, "status": 1}`, uuid.NewString()),
 	fmt.Sprintf(`{"productCode": "%s", "quantity": 8, "status": 1}`, uuid.NewString()),
+}
+
+// Non blocking error channel
+var (
+	in = make(chan string)
+)
+
+func worker(in <-chan string) (chan int, chan error) {
+	out := make(chan int)
+	errCh := make(chan error, 1)
+	go func() {
+		for msg := range in {
+			i, err := strconv.Atoi(msg)
+			if err != nil {
+				errCh <- err
+				continue
+			}
+			out <- i
+		}
+	}()
+	return out, errCh
 }
