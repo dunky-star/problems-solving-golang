@@ -12,13 +12,10 @@ import (
 )
 
 func main() {
-	var receivedOrderCh = make(chan order)
-	var validOrderCh = make(chan order)
-	var invalidOrderCh = make(chan invalidOrder)
 	var wg sync.WaitGroup
 
-	go receivedOrders(receivedOrderCh)
-	go validateOrders(receivedOrderCh, validOrderCh, invalidOrderCh)
+	receivedOrderCh := receivedOrders()
+	validOrderCh, invalidOrderCh := validateOrders(receivedOrderCh)
 
 	wg.Add(1)
 	go func(validOrderCh <-chan order, invalidOrderCh <-chan invalidOrder) {
@@ -46,31 +43,40 @@ func main() {
 	wg.Wait()
 }
 
-func validateOrders(in <-chan order, out chan<- order, errChan chan<- invalidOrder) {
-	for order := range in {
-		if order.Quantity <= 0 {
-			// Error condition
-			errChan <- invalidOrder{order: order, err: errors.New("Quantity must be grater that zero for product")}
-		} else {
-			// Success handling
-			out <- order
+func validateOrders(in <-chan order) (<-chan order, <-chan invalidOrder) {
+	out := make(chan order)
+	errCh := make(chan invalidOrder)
+	go func() {
+		for order := range in {
+			if order.Quantity <= 0 {
+				// Error condition
+				errCh <- invalidOrder{order: order, err: errors.New("quantity must be grater that zero for product")}
+			} else {
+				// Success handling
+				out <- order
+			}
 		}
-	}
-	close(out)
-	close(errChan)
+		close(out)
+		close(errCh)
+	}()
+	return out, errCh
 }
-func receivedOrders(out chan<- order) {
-	for _, rawOrder := range rawOrders {
-		var newOrder order
-		err := json.Unmarshal([]byte(rawOrder), &newOrder)
-		if err != nil {
-			log.Print(err)
-			continue
-		}
-		out <- newOrder
-	}
-	close(out)
 
+func receivedOrders() <-chan order {
+	out := make(chan order)
+	go func() {
+		for _, rawOrder := range rawOrders {
+			var newOrder order
+			err := json.Unmarshal([]byte(rawOrder), &newOrder)
+			if err != nil {
+				log.Print(err)
+				continue
+			}
+			out <- newOrder
+		}
+		close(out)
+	}()
+	return out
 }
 
 var rawOrders = []string{
