@@ -16,30 +16,46 @@ func main() {
 
 	receivedOrderCh := receivedOrders()
 	validOrderCh, invalidOrderCh := validateOrders(receivedOrderCh)
+	reservedInventoryCh := reserveInventory(validOrderCh)
 
-	wg.Add(1)
-	go func(validOrderCh <-chan order, invalidOrderCh <-chan invalidOrder) {
-	loop:
-		for {
-			select {
-			case order, ok := <-validOrderCh:
-				if ok {
-					fmt.Printf("Valid order received: %s", order)
-				} else {
-					break loop
-				}
-
-			case order, ok := <-invalidOrderCh:
-				if ok {
-					fmt.Printf("Invalid order received: %s. Issue: %s", order.order, order.err)
-				} else {
-					break loop
-				}
-
-			}
+	wg.Add(2)
+	go func(invalidOrderCh <-chan invalidOrder) {
+		for order := range invalidOrderCh {
+			fmt.Printf("Invalid order received: %v. Issue: %v\n", order.order, order.err)
 		}
 		wg.Done()
-	}(validOrderCh, invalidOrderCh)
+	}(invalidOrderCh)
+
+	go func(reservedInventoryCh <-chan order) {
+		for order := range reservedInventoryCh {
+			fmt.Printf("Inventory reserved for: %v\n", order)
+		}
+		wg.Done()
+	}(reservedInventoryCh)
+
+	// 	go func(validOrderCh <-chan order, invalidOrderCh <-chan invalidOrder) {
+	// 	loop:
+	// 		for {
+	// 			select {
+	// 			case order, ok := <-validOrderCh:
+	// 				if ok {
+	// 					fmt.Printf("Valid order received: %s", order)
+	// 				} else {
+	// 					break loop
+	// 				}
+
+	// 			case order, ok := <-invalidOrderCh:
+	// 				if ok {
+	// 					fmt.Printf("Invalid order received: %s. Issue: %s", order.order, order.err)
+	// 				} else {
+	// 					break loop
+	// 				}
+
+	//			}
+	//		}
+	//		wg.Done()
+	//	}(validOrderCh, invalidOrderCh)
+	//
 	wg.Wait()
 }
 
@@ -60,6 +76,19 @@ func validateOrders(in <-chan order) (<-chan order, <-chan invalidOrder) {
 		close(errCh)
 	}()
 	return out, errCh
+}
+
+func reserveInventory(in <-chan order) <-chan order {
+	out := make(chan order)
+	go func() {
+		for o := range in {
+			// Simulate inventory reservation
+			o.Status = reserved
+			out <- o
+		}
+		close(out)
+	}()
+	return out
 }
 
 func receivedOrders() <-chan order {
