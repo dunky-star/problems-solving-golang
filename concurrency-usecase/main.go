@@ -13,6 +13,9 @@ import (
 
 func main() {
 	var wg sync.WaitGroup
+	var wg2 sync.WaitGroup
+	s := []int{}
+	var m sync.Mutex
 
 	receivedOrderCh := receivedOrders()
 	validOrderCh, invalidOrderCh := validateOrders(receivedOrderCh)
@@ -57,6 +60,20 @@ func main() {
 	//	}(validOrderCh, invalidOrderCh)
 	//
 	wg.Wait()
+
+	// Demonstrating how to use Mutexes
+	const interations = 1000
+	wg2.Add(interations)
+	for i := range interations {
+		go func(i int) {
+			m.Lock()
+			s = append(s, i)
+			defer m.Unlock()
+			wg2.Done()
+		}(i)
+	}
+	wg2.Wait()
+	fmt.Printf("Length of s: %d\n", len(s))
 }
 
 func validateOrders(in <-chan order) (<-chan order, <-chan invalidOrder) {
