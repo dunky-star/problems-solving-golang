@@ -1,12 +1,14 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
 	"strconv"
 	"sync"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -62,15 +64,25 @@ func main() {
 	wg.Wait()
 
 	// Demonstrating how to use Mutexes
+	ctx, cancel := context.WithCancel(context.Background())
 	const interations = 1000
 	wg2.Add(interations)
 	for i := range interations {
-		go func(i int) {
+		go func(ctx context.Context) {
 			m.Lock()
 			s = append(s, i)
 			defer m.Unlock()
 			wg2.Done()
-		}(i)
+			for range time.Tick(500 * time.Millisecond) {
+				if ctx.Err() != nil {
+					log.Println(ctx.Err())
+					return
+				}
+				fmt.Println("Tick...")
+			}
+		}(ctx)
+		time.Sleep(2 * time.Millisecond)
+		cancel()
 	}
 	wg2.Wait()
 	fmt.Printf("Length of s: %d\n", len(s))
