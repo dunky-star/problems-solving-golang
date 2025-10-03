@@ -13,7 +13,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func main() {
+func mainConcur() {
 	var wg sync.WaitGroup
 	var wg2 sync.WaitGroup
 	s := []int{}
@@ -63,8 +63,9 @@ func main() {
 	//
 	wg.Wait()
 
-	// Demonstrating how to use Mutexes
-	ctx, cancel := context.WithCancel(context.Background())
+	// Demonstrating how to use Mutexes and Context
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
 	const interations = 1000
 	wg2.Add(interations)
 	for i := range interations {
@@ -81,8 +82,6 @@ func main() {
 				fmt.Println("Tick...")
 			}
 		}(ctx)
-		time.Sleep(2 * time.Millisecond)
-		cancel()
 	}
 	wg2.Wait()
 	fmt.Printf("Length of s: %d\n", len(s))
