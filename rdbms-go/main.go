@@ -11,12 +11,18 @@ import (
 )
 
 func main() {
-	Run()
+	if err := Run(); err != nil {
+		log.Fatal(err)
+	}
 }
 
-var o sync.Once
+var (
+	pool    *pgxpool.Pool // Thread-Safe and Efficient Global Singleton
+	o       sync.Once
+	initErr error
+)
 
-func Run() {
+func Run() error {
 	o.Do(func() {
 		// DSN string
 		dsn := "postgres://appuser:S3cure!@localhost:26257/bank?sslmode=require"
@@ -48,5 +54,5 @@ func Run() {
 
 		fmt.Println("Connected, server time is:", now)
 	})
-
+	return nil
 }
