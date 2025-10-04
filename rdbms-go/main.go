@@ -30,12 +30,19 @@ func main() {
 	// fmt.Println("New actor ID:", actorID)
 
 	// Retrieve the actor
-	actor, err := GetActor("dunkygeoffrey39@gmail.com")
-	if err != nil {
-		log.Fatal(err)
+	email := "dunkygeoffrey39@gmail.com"
+	existing, err := GetActor(email)
+	if err == nil && existing != nil {
+		// Actor exists
+		fmt.Printf("Actor already exists: %+v\n", existing)
+	} else {
+		// Insert new actor
+		actorID, err := addActor("Geoffrey", "Opiyo", email, "USA")
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println("New actor inserted with ID:", actorID)
 	}
-	fmt.Printf("Retrieved actor: %+v\n", actor)
-
 	// Retrieve all actors
 	actors, err := GetAllActors()
 	if err != nil {
