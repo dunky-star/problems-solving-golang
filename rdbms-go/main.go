@@ -52,6 +52,13 @@ func main() {
 	for _, a := range actors {
 		fmt.Printf("%+v\n", a)
 	}
+
+	// Update an existing actor
+	updated, err := UpdateActor(existing.ActorID, "Cathy", "Opiyo", "katie.o@example.com", "UK")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("Updated actor: %+v\n", updated)
 }
 
 func Run() error {
@@ -172,4 +179,28 @@ func GetAllActors() ([]Actor, error) {
 	}
 
 	return actors, nil
+}
+
+// UpdateActor updates an existing actor by ID.
+func UpdateActor(actorID, firstName, lastName, email, country string) (*Actor, error) {
+	query := `
+		UPDATE actor
+		SET first_name = $1,
+		    last_name  = $2,
+		    email      = $3,
+		    country    = $4,
+		    updated_at = current_timestamp()
+		WHERE actor_id = $5
+		RETURNING actor_id, first_name, last_name, email, country, created_at, updated_at;
+	`
+
+	var a Actor
+	err := pool.QueryRow(context.Background(), query,
+		firstName, lastName, email, country, actorID,
+	).Scan(&a.ActorID, &a.FirstName, &a.LastName, &a.Email, &a.Country, &a.CreatedAt, &a.UpdatedAt)
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to update actor %s: %w", actorID, err)
+	}
+	return &a, nil
 }
