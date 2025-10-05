@@ -27,12 +27,15 @@ func (app *application) greetingHandler(w http.ResponseWriter, r *http.Request) 
 	fmt.Fprintf(w, "Labor Omnia Vincit — %s\n", time.Now().Format(time.RFC1123))
 }
 
-func (app *application) getCreateBooksHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-	fmt.Fprintf(w, "Labor Omnia Vincit — %s\n", time.Now().Format(time.RFC1123))
+func (app *application) listBooksHandler(w http.ResponseWriter, r *http.Request) {
 }
 
-func (app *application) getUpdateDeleteBooksHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-	fmt.Fprintf(w, "Labor Omnia Vincit — %s\n", time.Now().Format(time.RFC1123))
+func (app *application) createBookHandler(w http.ResponseWriter, r *http.Request) {
+
+}
+func (app *application) updateBookHandler(w http.ResponseWriter, r *http.Request) {
+
+}
+func (app *application) deleteBookHandler(w http.ResponseWriter, r *http.Request) {
+
 }
