@@ -17,45 +17,54 @@ For example, it does not have built-in support for routing, middleware, or templ
 */
 
 import (
-	"encoding/json"
+	"flag"
 	"fmt"
+	"log"
 	"net/http"
+	"os"
 	"time"
 )
 
-func main() {
-	mux := http.NewServeMux()
-	mux.HandleFunc("/v1/greeting", greetingHandler)
-	mux.HandleFunc("/v1/healthcheck", healthCheckHandler)
+const version = "1.0.0"
 
-	PORT := ":4000"
-	fmt.Printf("Server is running on http://localhost%s\n", PORT)
+type config struct {
+	port int
+	env  string
+}
 
-	// Start the server and log any error if it fails
-	err := http.ListenAndServe(PORT, mux)
-	if err != nil {
-		fmt.Println(err)
-	}
+type application struct {
+	config config
+	logger *log.Logger
 }
 
 var startTime = time.Now()
 
-func greetingHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-	fmt.Fprintf(w, "Labor Omnia Vincit — %s\n", time.Now().Format(time.RFC1123))
-}
+func main() {
+	var cfg config
+	flag.IntVar(&cfg.port, "port", 4000, "API server port")
+	flag.StringVar(&cfg.env, "env", "dev", "Environment (dev|stage|prod)")
+	flag.Parse()
 
-func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	// Calculate uptime dynamically
-	uptime := time.Since(startTime).Truncate(time.Second)
-	status := map[string]interface{}{
-		"status":    "available",
-		"uptime":    uptime.String(),
-		"timestamp": time.Now().Format(time.RFC3339),
+	logger := log.New(os.Stdout, "", log.Ldate|log.Ltime)
+
+	app := &application{
+		config: cfg,
+		logger: logger,
 	}
 
-	if err := json.NewEncoder(w).Encode(status); err != nil {
-		http.Error(w, fmt.Sprintf(`{"error":"%s"}`, err.Error()), http.StatusInternalServerError)
+	// Create a new HTTP request multiplexer (router)
+	mux := http.NewServeMux()
+	mux.HandleFunc("GET /v1/greeting", app.greetingHandler)
+	mux.HandleFunc("GET /v1/healthcheck", app.healthCheckHandler)
+
+	// Define the server address and port
+	addr := fmt.Sprintf(":%d", cfg.port)
+
+	fmt.Printf("Server is running on http://localhost%s\n", addr)
+
+	// Start the server and log any error if it fails
+	err := http.ListenAndServe(addr, mux)
+	if err != nil {
+		fmt.Println(err)
 	}
 }
