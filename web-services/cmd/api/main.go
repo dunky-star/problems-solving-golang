@@ -52,19 +52,21 @@ func main() {
 		logger: logger,
 	}
 
-	// Create a new HTTP request multiplexer (router)
-	mux := http.NewServeMux()
-	mux.HandleFunc("GET /v1/greeting", app.greetingHandler)
-	mux.HandleFunc("GET /v1/healthcheck", app.healthCheckHandler)
+	// Create the HTTP Server
+	srv := &http.Server{
+		Addr:         fmt.Sprintf(":%d", cfg.port),
+		Handler:      app.routes(),     // Set the routes for the server
+		ReadTimeout:  10 * time.Second, // Maximum duration for reading the entire request, including the body
+		WriteTimeout: 30 * time.Second, // Maximum duration before timing out writes of the response
+		IdleTimeout:  time.Minute,      // Maximum amount of time to wait for the next request when keep-alives are enabled
+	}
 
 	// Define the server address and port
 	addr := fmt.Sprintf(":%d", cfg.port)
 
-	fmt.Printf("Server is running on http://localhost%s\n", addr)
+	logger.Printf("Server is running on http://localhost%s\n", addr)
 
 	// Start the server and log any error if it fails
-	err := http.ListenAndServe(addr, mux)
-	if err != nil {
-		fmt.Println(err)
-	}
+	err := srv.ListenAndServe()
+	logger.Fatal(err)
 }
