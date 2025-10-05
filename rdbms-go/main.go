@@ -204,3 +204,15 @@ func UpdateActor(actorID, firstName, lastName, email, country string) (*Actor, e
 	}
 	return &a, nil
 }
+
+func deleteActorByEmail(email string) error {
+	cmdTag, err := pool.Exec(context.Background(), "DELETE FROM actor WHERE email = $1", email)
+	if err != nil {
+		return fmt.Errorf("failed to delete actor by email %s: %w", email, err)
+	}
+	if cmdTag.RowsAffected() == 0 {
+		return fmt.Errorf("no actor found with email %s", email)
+	}
+	fmt.Printf("Actor with email %s deleted successfully.\n", email)
+	return nil
+}
