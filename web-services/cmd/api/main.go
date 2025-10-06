@@ -17,12 +17,17 @@ For example, it does not have built-in support for routing, middleware, or templ
 */
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/joho/godotenv"
+	"readinglist.dunky.io/pkg/database"
 )
 
 const version = "1.0.0"
@@ -30,26 +35,44 @@ const version = "1.0.0"
 type config struct {
 	port int
 	env  string
+	dsn  string
 }
 
 type application struct {
 	config config
 	logger *log.Logger
+	db     *pgxpool.Pool
 }
 
 var startTime = time.Now()
 
 func main() {
 	var cfg config
+	godotenv.Load(".env")
 	flag.IntVar(&cfg.port, "port", 4000, "API server port")
 	flag.StringVar(&cfg.env, "env", "dev", "Environment (dev|stage|prod)")
+	flag.StringVar(&cfg.dsn, "db-dsn", os.Getenv("DB_DSN"), "CockroachDB connection string")
 	flag.Parse()
 
 	logger := log.New(os.Stdout, "", log.Ldate|log.Ltime)
 
+	if cfg.dsn == "" {
+		logger.Fatal("db-dsn flag or DB_DSN environment variable must be set")
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	dbPool, err := database.Init(ctx, cfg.dsn)
+	if err != nil {
+		logger.Fatal(err)
+	}
+	defer database.Close()
+
 	app := &application{
 		config: cfg,
 		logger: logger,
+		db:     dbPool,
 	}
 
 	// Create the HTTP Server
@@ -67,6 +90,6 @@ func main() {
 	logger.Printf("Server is running on http://localhost%s\n", addr)
 
 	// Start the server and log any error if it fails
-	err := srv.ListenAndServe()
+	err = srv.ListenAndServe()
 	logger.Fatal(err)
 }
