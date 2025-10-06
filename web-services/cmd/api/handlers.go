@@ -4,14 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
-)
 
-type Book struct {
-	Title  string `json:"title"`
-	Author string `json:"author"`
-	Year   int    `json:"year"`
-}
+	"readinglist.dunky.io/internal/data"
+)
 
 func (app *application) healthCheckHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
@@ -36,13 +33,24 @@ func (app *application) greetingHandler(w http.ResponseWriter, r *http.Request) 
 func (app *application) getBookHandler(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id") // Extract `{id}` from the URL path
 
+	idInt, err := strconv.ParseInt(id, 10, 64)
+	if err != nil || idInt < 1 {
+		http.Error(w, `{"error":"invalid book ID"}`, http.StatusBadRequest)
+		return
+	}
+
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 
 	// Example placeholder JSON response
-	response := map[string]string{
-		"id":     id,
-		"title":  "Sample Book",
-		"author": "Jane Doe",
+	response := data.Book{
+		ID:        idInt,
+		Title:     "The Great Adventure",
+		Pages:     350,
+		Genres:    []string{"Fiction", "Adventure"},
+		Rating:    4.5,
+		Published: 2021,
+		Version:   1,
+		CreatedAt: time.Now(),
 	}
 
 	if err := json.NewEncoder(w).Encode(response); err != nil {
@@ -55,10 +63,27 @@ func (app *application) listBooksHandler(w http.ResponseWriter, r *http.Request)
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 
 	// Mock data — replace this with a DB query later
-	books := []map[string]interface{}{
-		{"id": "b1a2c3", "title": "The Go Programming Language", "author": "Alan A. A. Donovan"},
-		{"id": "d4e5f6", "title": "Concurrency in Go", "author": "Katherine Cox-Buday"},
-		{"id": "g7h8i9", "title": "Introducing Go", "author": "Caleb Doxsey"},
+	books := []data.Book{
+		{
+			ID:        1,
+			CreatedAt: time.Now(),
+			Title:     "The Darkening of Tristram",
+			Published: 1998,
+			Pages:     300,
+			Genres:    []string{"Fiction", "Thriller"},
+			Rating:    4.5,
+			Version:   1,
+		},
+		{
+			ID:        2,
+			CreatedAt: time.Now(),
+			Title:     "The Legacy of Deckard Cain",
+			Published: 2007,
+			Pages:     432,
+			Genres:    []string{"Fiction", "Adventure"},
+			Rating:    4.9,
+			Version:   1,
+		},
 	}
 
 	// Encode and send JSON response
@@ -76,7 +101,7 @@ func (app *application) createBookHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	// Decode the JSON request body
-	var book Book
+	var book data.Book
 	if err := json.NewDecoder(r.Body).Decode(&book); err != nil {
 		http.Error(w, `{"error": "invalid JSON payload"}`, http.StatusBadRequest)
 		return
