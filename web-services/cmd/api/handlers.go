@@ -87,10 +87,12 @@ func (app *application) listBooksHandler(w http.ResponseWriter, r *http.Request)
 	}
 
 	// Encode and send JSON response
-	if err := json.NewEncoder(w).Encode(books); err != nil {
-		http.Error(w, `{"error": "failed to encode response"}`, http.StatusInternalServerError)
-		return
+	enc := json.NewEncoder(w)
+	enc.SetIndent("", "  ") // 2-space indentation
+	if err := enc.Encode(books); err != nil {
+		http.Error(w, `{"error":"Failed to encode books"}`, http.StatusInternalServerError)
 	}
+
 }
 
 func (app *application) createBookHandler(w http.ResponseWriter, r *http.Request) {
