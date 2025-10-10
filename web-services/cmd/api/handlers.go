@@ -81,7 +81,8 @@ func (app *application) createBookHandler(w http.ResponseWriter, r *http.Request
 	// Close request body after reading
 	defer r.Body.Close()
 
-	if err := app.models.Book.Insert(&input); err != nil {
+	created, err := app.models.Book.Insert(r.Context(), &input)
+	if err != nil {
 		app.logger.Printf("insert book error: %v", err)
 		http.Error(w, `{"error": "failed to create book"}`, http.StatusInternalServerError)
 		return
@@ -94,7 +95,7 @@ func (app *application) createBookHandler(w http.ResponseWriter, r *http.Request
 	// Respond with confirmation JSON
 	response := map[string]interface{}{
 		"message": "Book created successfully",
-		"book":    input,
+		"book":    created,
 	}
 
 	if err := json.NewEncoder(w).Encode(response); err != nil {

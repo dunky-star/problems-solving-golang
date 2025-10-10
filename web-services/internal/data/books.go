@@ -25,29 +25,36 @@ type BookModel struct {
 	DB *pgxpool.Pool
 }
 
-func (b *BookModel) Insert(book *Book) error {
+type BookCreated struct {
+	ID        string    `json:"id"`
+	CreatedAt time.Time `json:"created_at"`
+	Version   int32     `json:"version"`
+}
+
+func (b *BookModel) Insert(ctx context.Context, book *Book) (*BookCreated, error) {
 	query := `
 		INSERT INTO books (title, published, pages, genres, rating)
 		VALUES ($1, $2, $3, $4, $5)
-		RETURNING id, created_at, version;
+		RETURNING id::string, created_at, version;
 	`
 
 	// CockroachDB natively supports string arrays via []string
-	err := b.DB.QueryRow(
-		context.Background(),
+	row := b.DB.QueryRow(
+		ctx,
 		query,
 		book.Title,
 		book.Published,
 		book.Pages,
 		book.Genres, // no pq.Array() needed
 		book.Rating,
-	).Scan(&book.ID, &book.CreatedAt, &book.Version)
+	)
 
-	if err != nil {
-		return fmt.Errorf("insert book: %w", err)
+	var created BookCreated
+	if err := row.Scan(&created.ID, &created.CreatedAt, &created.Version); err != nil {
+		return nil, fmt.Errorf("insert book: %w", err)
 	}
 
-	return nil
+	return &created, nil
 }
 
 func (b BookModel) Get(id string) (*Book, error) {
