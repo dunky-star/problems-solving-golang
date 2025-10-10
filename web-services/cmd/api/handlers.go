@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strconv"
 	"time"
 
 	"readinglist.dunky.io/internal/data"
@@ -31,29 +30,21 @@ func (app *application) greetingHandler(w http.ResponseWriter, r *http.Request) 
 }
 
 func (app *application) getBookHandler(w http.ResponseWriter, r *http.Request) {
-	id := r.PathValue("id") // Extract `{id}` from the URL path
+	id := r.PathValue("id")
+	if id == "" {
+		http.Error(w, `{"error":"missing book ID"}`, http.StatusBadRequest)
+		return
+	}
 
-	idInt, err := strconv.ParseInt(id, 10, 64)
-	if err != nil || idInt < 1 {
-		http.Error(w, `{"error":"invalid book ID"}`, http.StatusBadRequest)
+	book, err := app.models.Book.Get(id)
+	if err != nil {
+		app.logger.Printf("get book error: %v", err)
+		http.Error(w, `{"error":"book not found"}`, http.StatusNotFound)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-
-	// Example placeholder JSON response
-	response := data.Book{
-		ID:        idInt,
-		Title:     "The Great Adventure",
-		Pages:     350,
-		Genres:    []string{"Fiction", "Adventure"},
-		Rating:    4.5,
-		Published: 2021,
-		Version:   1,
-		CreatedAt: time.Now(),
-	}
-
-	if err := json.NewEncoder(w).Encode(response); err != nil {
+	if err := json.NewEncoder(w).Encode(book); err != nil {
 		http.Error(w, `{"error":"Failed to encode response"}`, http.StatusInternalServerError)
 	}
 }
@@ -63,27 +54,11 @@ func (app *application) listBooksHandler(w http.ResponseWriter, r *http.Request)
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 
 	// Mock data — replace this with a DB query later
-	books := []data.Book{
-		{
-			ID:        1,
-			CreatedAt: time.Now(),
-			Title:     "The Darkening of Tristram",
-			Published: 1998,
-			Pages:     300,
-			Genres:    []string{"Fiction", "Thriller"},
-			Rating:    4.5,
-			Version:   1,
-		},
-		{
-			ID:        2,
-			CreatedAt: time.Now(),
-			Title:     "The Legacy of Deckard Cain",
-			Published: 2007,
-			Pages:     432,
-			Genres:    []string{"Fiction", "Adventure"},
-			Rating:    4.9,
-			Version:   1,
-		},
+	books, err := app.models.Book.GetAll()
+	if err != nil {
+		app.logger.Printf("list books error: %v", err)
+		http.Error(w, `{"error":"Failed to fetch books"}`, http.StatusInternalServerError)
+		return
 	}
 
 	// Encode and send JSON response
@@ -96,15 +71,9 @@ func (app *application) listBooksHandler(w http.ResponseWriter, r *http.Request)
 }
 
 func (app *application) createBookHandler(w http.ResponseWriter, r *http.Request) {
-	// Ensure only POST requests reach here
-	if r.Method != http.MethodPost {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
 	// Decode the JSON request body
-	var book data.Book
-	if err := json.NewDecoder(r.Body).Decode(&book); err != nil {
+	var input data.Book
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		http.Error(w, `{"error": "invalid JSON payload"}`, http.StatusBadRequest)
 		return
 	}
@@ -112,8 +81,11 @@ func (app *application) createBookHandler(w http.ResponseWriter, r *http.Request
 	// Close request body after reading
 	defer r.Body.Close()
 
-	// For now, we just simulate saving to a DB
-	fmt.Printf(" Received new book: %+v\n", book)
+	if err := app.models.Book.Insert(&input); err != nil {
+		app.logger.Printf("insert book error: %v", err)
+		http.Error(w, `{"error": "failed to create book"}`, http.StatusInternalServerError)
+		return
+	}
 
 	// Set response headers
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
@@ -122,7 +94,7 @@ func (app *application) createBookHandler(w http.ResponseWriter, r *http.Request
 	// Respond with confirmation JSON
 	response := map[string]interface{}{
 		"message": "Book created successfully",
-		"book":    book,
+		"book":    input,
 	}
 
 	if err := json.NewEncoder(w).Encode(response); err != nil {
@@ -131,33 +103,46 @@ func (app *application) createBookHandler(w http.ResponseWriter, r *http.Request
 }
 
 func (app *application) updateBookHandler(w http.ResponseWriter, r *http.Request) {
-	// Enforce PUT-only access for safety
-	if r.Method != http.MethodPut {
-		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+	id := r.PathValue("id")
+	if id == "" {
+		http.Error(w, "Missing book ID", http.StatusBadRequest)
 		return
 	}
 
-	// Extract the book ID from the URL path parameter {id}
-	id := r.PathValue("id")
+	var input data.Book
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		http.Error(w, `{"error": "invalid JSON payload"}`, http.StatusBadRequest)
+		return
+	}
+	defer r.Body.Close()
 
-	// You’d parse JSON from r.Body and update in the database
-	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "Updating book with ID: %s\n", id)
+	input.ID = id
+
+	if err := app.models.Book.Update(&input); err != nil {
+		app.logger.Printf("update book error: %v", err)
+		http.Error(w, `{"error": "failed to update book"}`, http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	if err := json.NewEncoder(w).Encode(input); err != nil {
+		http.Error(w, `{"error": "failed to encode response"}`, http.StatusInternalServerError)
+	}
 }
 
 func (app *application) deleteBookHandler(w http.ResponseWriter, r *http.Request) {
-	// Allow only DELETE requests
-	if r.Method != http.MethodDelete {
-		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+	id := r.PathValue("id")
+	if id == "" {
+		http.Error(w, "Missing book ID", http.StatusBadRequest)
 		return
 	}
 
-	// Extract book ID from URL path
-	id := r.PathValue("id")
+	if err := app.models.Book.Delete(id); err != nil {
+		app.logger.Printf("delete book error: %v", err)
+		http.Error(w, `{"error": "failed to delete book"}`, http.StatusInternalServerError)
+		return
+	}
 
-	// You'd delete the book from a database here
-	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "Deleting book with ID: %s\n", id)
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	json.NewEncoder(w).Encode(map[string]string{"message": "Book deleted"})
 }

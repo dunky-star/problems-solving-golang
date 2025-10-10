@@ -25,8 +25,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
+	"readinglist.dunky.io/internal/data"
 	"readinglist.dunky.io/pkg/database"
 )
 
@@ -41,7 +41,7 @@ type config struct {
 type application struct {
 	config config
 	logger *log.Logger
-	db     *pgxpool.Pool
+	models data.Models
 }
 
 var startTime = time.Now()
@@ -72,7 +72,7 @@ func main() {
 	app := &application{
 		config: cfg,
 		logger: logger,
-		db:     dbPool,
+		models: data.NewModels(dbPool),
 	}
 
 	// Create the HTTP Server
