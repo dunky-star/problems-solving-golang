@@ -81,6 +81,8 @@ func (app *application) createBookHandler(w http.ResponseWriter, r *http.Request
 	// Close request body after reading
 	defer r.Body.Close()
 
+	app.logger.Printf("creating book: %+v", input)
+
 	created, err := app.models.Book.Insert(r.Context(), &input)
 	if err != nil {
 		app.logger.Printf("insert book error: %v", err)
