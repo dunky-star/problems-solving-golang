@@ -13,7 +13,7 @@ For example, it does not have built-in support for routing, middleware, or templ
 	-Panic recovery
 	-CORS / rate limiting
 
-	*** Routing is limited to exact path matching and http.ServeMux does not support path parameters (e.g. /users/{id})
+	*** Use ServeMux (net/http) for routing and middleware
 */
 
 import (
