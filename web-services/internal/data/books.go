@@ -11,14 +11,14 @@ import (
 )
 
 type Book struct {
-	ID        string    `json:"id"`
+	ID        string    `json:"id,omitempty"`
 	Title     string    `json:"title"`
-	Published int       `json:"published"`
-	Pages     int       `json:"pages"`
-	Genres    []string  `json:"genres"`
-	Rating    float32   `json:"rating"`
-	Version   int32     `json:"version"`
-	CreatedAt time.Time `json:"created_at"`
+	Published int       `json:"published,omitempty"`
+	Pages     int       `json:"pages,omitempty"`
+	Genres    []string  `json:"genres,omitempty"`
+	Rating    float32   `json:"rating,omitempty"`
+	CreatedAt time.Time `json:"-"`
+	Version   int32     `json:"-"`
 }
 
 type BookModel struct {

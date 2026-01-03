@@ -13,7 +13,7 @@ For example, it does not have built-in support for routing, middleware, or templ
 	-Panic recovery
 	-CORS / rate limiting
 
-	*** Use ServeMux (net/http) for routing and middleware
+	*** Use NewServeMux (net/http) for routing and middleware
 */
 
 import (
@@ -32,6 +32,7 @@ import (
 
 const version = "1.0.0"
 
+// Config, to allow the server to be configured at startup dynamically
 type config struct {
 	port int
 	env  string
@@ -51,7 +52,7 @@ func main() {
 	godotenv.Load(".env")
 	flag.IntVar(&cfg.port, "port", 4000, "API server port")
 	flag.StringVar(&cfg.env, "env", "dev", "Environment (dev|stage|prod)")
-	flag.StringVar(&cfg.dsn, "db-dsn", os.Getenv("DB_DSN"), "CockroachDB connection string")
+	flag.StringVar(&cfg.dsn, "db-dsn", os.Getenv("DB_DSN"), "DB connection string")
 	flag.Parse()
 
 	logger := log.New(os.Stdout, "", log.Ldate|log.Ltime)

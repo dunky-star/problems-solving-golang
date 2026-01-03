@@ -117,7 +117,7 @@ func parseNumbers(data []byte) {
 	fmt.Println("Sum:", sum)
 }
 
-func main() {
+func mainBkup2() {
 	// var f File
 	// var t TCPConn
 	// var r Reader
