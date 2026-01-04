@@ -1,6 +1,10 @@
 package main
 
-import "log"
+import (
+	"fmt"
+	"log"
+	"sort"
+)
 
 type User struct {
 	firstName string
@@ -11,6 +15,8 @@ type User struct {
 
 func main() {
 	var myString string = "green"
+
+	var mySlice []any
 
 	myMap := make(map[string]*User)
 
@@ -40,6 +46,14 @@ func main() {
 	changeUsingPointer(&myString)
 	log.Println("After func call, myString is set to", myString)
 
+	mySlice = append(mySlice, "Geo", "Kaligs", 42, true, user1)
+	log.Println("mySlice is set to", mySlice)
+	changeSlice(&mySlice)
+	log.Println("After func call, mySlice is set to", mySlice)
+
+	sortSlice(mySlice)
+	log.Println("After sorting, mySlice is set to", mySlice)
+
 }
 
 func changeUsingPointer(s *string) {
@@ -58,4 +72,15 @@ func changeUser(u *User) {
 	u.lastName = newLastName
 	u.email = newEmail
 	u.age = newAge
+}
+
+func changeSlice(s *[]any) {
+	log.Println("s is set to", s)
+	*s = append(*s, "NewItem", 100, false)
+}
+
+func sortSlice(slice []any) {
+	sort.Slice(slice, func(i, j int) bool {
+		return fmt.Sprintf("%v", slice[i]) < fmt.Sprintf("%v", slice[j])
+	})
 }
