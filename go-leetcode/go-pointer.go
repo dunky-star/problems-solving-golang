@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"sort"
+	"strings"
 )
 
 type User struct {
@@ -17,6 +18,13 @@ func main() {
 	var myString string = "green"
 
 	var mySlice []any
+
+	var users []User
+
+	users = append(users, User{"Jim", "Beam", "jim.beam@example.com", 50})
+	users = append(users, User{"Jill", "Johnson", "jill.johnson@example.com", 25})
+	users = append(users, User{"Jack", "Smith", "jack.smith@example.com", 35})
+	users = append(users, User{"Jill", "Johnson", "jill.johnson@example.com", 25})
 
 	myMap := make(map[string]*User)
 
@@ -53,6 +61,12 @@ func main() {
 
 	sortSlice(mySlice)
 	log.Println("After sorting, mySlice is set to", mySlice)
+
+	for _, user := range users {
+		if strings.ToLower(user.firstName) == "jack" {
+			log.Println("User found: ", user)
+		}
+	}
 
 }
 
