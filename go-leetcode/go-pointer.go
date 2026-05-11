@@ -14,7 +14,7 @@ type User struct {
 	age       int
 }
 
-func main() {
+func mainPointer() {
 	var myString string = "green"
 
 	var mySlice []any
