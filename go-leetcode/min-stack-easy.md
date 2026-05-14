@@ -1,5 +1,7 @@
 ![Min Stack](image.png)
 
+![Algo](image-1.png)
+
 ---
 
 ### Algorithm
